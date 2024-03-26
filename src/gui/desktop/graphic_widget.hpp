@@ -26,16 +26,6 @@ public:
     }
 
 public:
-    void DrawDot(int row, int col, QBrush brush) {
-        qreal x{static_cast<qreal>(col * cell_w_)};
-        qreal y{static_cast<qreal>(row * cell_h_)};
-
-        dots_.push_back(new QGraphicsRectItem(x, y, cell_w_, cell_h_));
-
-        dots_.back()->setBrush(brush);
-        scene_->addItem(dots_.back());
-    }
-
     void Draw(const GameInfo_t& info) {
         ClearScene();
         setScene(scene_);
@@ -52,6 +42,16 @@ public:
     }
 
 private:
+    void DrawDot(int row, int col, QBrush brush) {
+        qreal x{static_cast<qreal>(col * cell_w_)};
+        qreal y{static_cast<qreal>(row * cell_h_)};
+
+        dots_.push_back(new QGraphicsRectItem(x, y, cell_w_, cell_h_));
+
+        dots_.back()->setBrush(brush);
+        scene_->addItem(dots_.back());
+    }
+
     void ClearScene() {
         for (qsizetype i{}; i < dots_.size(); ++i) {
             if (dots_[i]) {
