@@ -24,6 +24,13 @@ public:
     View(Controller* contr, QWidget *parent = nullptr);
     ~View();
 
+protected:
+    bool focusNextPrevChild(bool) override;
+    void showEvent(QShowEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
+
 private:
     void ChangeGame();
     void BtnStartClicked();
@@ -31,7 +38,6 @@ private:
     void BtnPauseClicked();
     void ExecTimerAction();
     void SetShadowEffect(QWidget* wdg);
-    void keyPressEvent(QKeyEvent* event) override;
 
 private:
     Ui::View* ui_;
@@ -39,7 +45,7 @@ private:
     Controller *controller_;
     std::unique_ptr<GraphicWidget> field_;
 
-    UserAction_t direction_{UserAction_t::kUp};
+    UserAction_t action_{UserAction_t::kUp};
 };
 } // namespace s21
 

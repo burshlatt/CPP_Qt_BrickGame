@@ -11,7 +11,6 @@ namespace s21 {
 class GraphicWidget : public QGraphicsView {
 public:
     GraphicWidget(QGraphicsView *wdg = nullptr) : QGraphicsView(wdg) {
-        setFocusPolicy(Qt::StrongFocus);
         scene_ = new QGraphicsScene(this);
         setScene(scene_);
         scene_->addRect(0, 0, 200, 400);

@@ -1,7 +1,7 @@
 #ifndef BRICKGAME_BRICK_GAME_SNAKE_SNAKE_HPP
 #define BRICKGAME_BRICK_GAME_SNAKE_SNAKE_HPP
 
-#include <list>
+#include <vector>
 #include <memory>
 #include <random>
 #include <algorithm>
@@ -92,7 +92,15 @@ private:
         }
     }
 
-    void MoveTail(std::list<Coords>::iterator it) {
+    void CheckCollision() {
+        auto head{dots_.begin()};
+        auto count{std::count(dots_.begin(), dots_.end(), *head)};
+
+        if (count > 1)
+                game_info_.game_over = true;
+    }
+
+    void MoveTail(std::vector<Coords>::iterator it) {
         if (it != dots_.end()) {
             auto prev_dot{it};
             --prev_dot;
@@ -123,30 +131,40 @@ private:
                 break;
         }
 
-        СorrectMovement();
+        СorrectMovement(head);
         CheckCollision();
     }
 
-    void СorrectMovement() {
-        auto head{dots_.begin()};
-
-        if (head->x < 0) {
-            head->x = game_info_.field_cols - 1;
-        } else if (head->y < 0) {
-            head->y = game_info_.field_rows - 1;
-        } else if (head->x > game_info_.field_cols - 1) {
-            head->x = 0;
-        } else if (head->y > game_info_.field_rows - 1) {
-            head->y = 0;
+    void СorrectMovement(std::vector<Coords>::iterator it) {
+        if (it->x < 0) {
+            it->x = game_info_.field_cols - 1;
+        } else if (it->y < 0) {
+            it->y = game_info_.field_rows - 1;
+        } else if (it->x > game_info_.field_cols - 1) {
+            it->x = 0;
+        } else if (it->y > game_info_.field_rows - 1) {
+            it->y = 0;
         }
     }
 
-    void CheckCollision() {
-        auto head{dots_.begin()};
-        auto count{std::count(dots_.begin(), dots_.end(), *head)};
+    void AddDot() {
+        int x{dots_.back().x};
+        int y{dots_.back().y};
 
-        if (count > 1)
-            game_info_.game_over = true;
+        auto prev{std::prev(dots_.end(), 2)};
+
+        if (x > prev->x) {
+            ++x;
+        } else if (x < prev->x) {
+            --x;
+        } else if (y > prev->y) {
+            ++y;
+        } else if (y < prev->y) {
+            --y;
+        }
+
+        dots_.emplace_back(x, y);
+        СorrectMovement(dots_.end() - 1);
     }
 
     void CheckApple() {
@@ -178,25 +196,6 @@ private:
         }
     }
 
-    void AddDot() {
-        int x{dots_.back().x};
-        int y{dots_.back().y};
-
-        auto prev{std::prev(dots_.end(), 2)};
-
-        if (x > prev->x) {
-            ++x;
-        } else if (x < prev->x) {
-            --x;
-        } else if (y > prev->y) {
-            ++y;
-        } else if (y < prev->y) {
-            --y;
-        }
-
-        dots_.emplace_back(x, y);
-    }
-
     void ClearField() {
         for (int i{}; i < GameInfo_t::field_rows; ++i)
             for (int j{}; j < GameInfo_t::field_cols; ++j)
@@ -212,7 +211,7 @@ private:
 
 private:
     Coords apple_;
-    std::list<Coords> dots_;
+    std::vector<Coords> dots_;
 
     Direction direction_;
     GameInfo_t game_info_;
