@@ -24,10 +24,22 @@ View::View(Controller* contr, QWidget *parent) :
 
     field_ = std::make_unique<GraphicWidget>(ui_->gvField);
 
+    timer_->start(250);
+
     connect(timer_, &QTimer::timeout, this, &View::ExecTimerAction);
-    connect(ui_->btnStart, &QPushButton::clicked, this, &View::BtnStartClicked);
-    connect(ui_->btnPause, &QPushButton::clicked, this, &View::BtnPauseClicked);
     connect(ui_->cbGame, &QComboBox::currentIndexChanged, this, &View::ChangeGame);
+
+    connect(ui_->btnStart, &QPushButton::clicked, this, [this]() {
+        action_ = UserAction_t::kStart;
+    });
+
+    connect(ui_->btnPause, &QPushButton::clicked, this, [this]() {
+        action_ = UserAction_t::kPause;
+    });
+
+    connect(ui_->btnReset, &QPushButton::clicked, this, [this]() {
+        action_ = UserAction_t::kTerminate;
+    });
 
     connect(ui_->btnUp, &QPushButton::clicked, this, [this]() {
         action_ = UserAction_t::kUp;
@@ -47,12 +59,14 @@ View::View(Controller* contr, QWidget *parent) :
 }
 
 View::~View() {
+    timer_->stop();
     delete timer_;
     delete ui_;
 }
 
 void View::SetShadowEffect(QWidget* wdg) {
     QGraphicsDropShadowEffect* shadow{new QGraphicsDropShadowEffect()};
+
     shadow->setBlurRadius(10);
     shadow->setXOffset(0);
     shadow->setYOffset(0);
@@ -61,19 +75,9 @@ void View::SetShadowEffect(QWidget* wdg) {
     wdg->setGraphicsEffect(shadow);
 }
 
-void View::BtnStartClicked() {
-    if (!timer_->isActive())
-        timer_->start(250);
-}
+//void View::BtnSoundClicked() {
 
-void View::BtnPauseClicked() {
-    if (timer_->isActive())
-        timer_->stop();
-}
-
-void View::BtnSoundClicked() {
-
-}
+//}
 
 void View::ExecTimerAction() {
     controller_->UserInput(action_);
@@ -81,7 +85,6 @@ void View::ExecTimerAction() {
     GameInfo_t info{controller_->UpdateCurrentState()};
 
     if (info.game_over) {
-        timer_->stop();
         controller_->UserInput(UserAction_t::kTerminate);
     } else {
         field_->Draw(info);
@@ -117,16 +120,31 @@ void View::focusOutEvent(QFocusEvent* event) {
 }
 
 void View::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Up) {
+    switch (event->key()) {
+    case Qt::Key_R:
+        action_ = UserAction_t::kStart;
+        break;
+    case Qt::Key_Space:
+        action_ = UserAction_t::kTerminate;
+        break;
+    case Qt::Key_P:
+        action_ = UserAction_t::kPause;
+        break;
+    case Qt::Key_Up:
         action_ = UserAction_t::kUp;
-    } else if (event->key() == Qt::Key_Down) {
+        break;
+    case Qt::Key_Down:
         action_ = UserAction_t::kDown;
-    } else if (event->key() == Qt::Key_Left) {
+        break;
+    case Qt::Key_Left:
         action_ = UserAction_t::kLeft;
-    } else if (event->key() == Qt::Key_Right) {
+        break;
+    case Qt::Key_Right:
         action_ = UserAction_t::kRight;
-    } else {
+        break;
+    default:
         QWidget::keyPressEvent(event);
+        break;
     }
 }
 } // namespace s21

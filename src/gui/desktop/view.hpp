@@ -33,9 +33,7 @@ protected:
 
 private:
     void ChangeGame();
-    void BtnStartClicked();
-    void BtnSoundClicked();
-    void BtnPauseClicked();
+//    void BtnSoundClicked();
     void ExecTimerAction();
     void SetShadowEffect(QWidget* wdg);
 

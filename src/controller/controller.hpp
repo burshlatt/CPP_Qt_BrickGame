@@ -10,7 +10,7 @@ public:
     ~Controller() = default;
 
 public:
-    GameInfo_t UpdateCurrentState() const {
+    GameInfo_t UpdateCurrentState() const noexcept {
         return model_->GetGameInfo();
     }
 
@@ -18,11 +18,13 @@ public:
     void UserInput(UserAction_t action) {
         switch (action) {
             case UserAction_t::kStart:
+                model_->Start();
                 break;
             case UserAction_t::kTerminate:
                 model_->ResetState();
                 break;
             case UserAction_t::kPause:
+                model_->Stop();
                 break;
             case UserAction_t::kUp:
                 model_->UpdateState(Snake::Direction::kUp);

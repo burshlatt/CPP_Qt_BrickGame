@@ -66,10 +66,10 @@ private:
     QGraphicsScene* scene_;
     QVector<QGraphicsRectItem*> dots_;
 
-    static constexpr const int rows_{20};
-    static constexpr const int cols_{10};
-    static constexpr const qreal cell_w_{static_cast<qreal>(200 / cols_)};
-    static constexpr const qreal cell_h_{static_cast<qreal>(400 / rows_)};
+    static constexpr int rows_{20};
+    static constexpr int cols_{10};
+    static constexpr qreal cell_w_{static_cast<qreal>(200 / cols_)};
+    static constexpr qreal cell_h_{static_cast<qreal>(400 / rows_)};
 };
 } // namespace s21
 
