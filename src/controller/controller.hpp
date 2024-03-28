@@ -1,18 +1,20 @@
 #ifndef BRICKGAME_CONTROLLER_CONTROLLER_HPP
 #define BRICKGAME_CONTROLLER_CONTROLLER_HPP
 
-#include "snake.hpp"
+#include "game.hpp"
 
 namespace s21 {
 class Controller {
 public:
-    Controller(Snake* model) : model_(model) {}
+    Controller(Game* model) : model_(model) {}
     ~Controller() = default;
 
 public:
     GameInfo_t UpdateCurrentState() const noexcept {
         return model_->GetGameInfo();
     }
+
+    void SetModel(Game* model) noexcept { model_ = model; }
 
 public:
     void UserInput(UserAction_t action) {
@@ -27,24 +29,31 @@ public:
                 model_->Stop();
                 break;
             case UserAction_t::kUp:
-                model_->UpdateState(Snake::Direction::kUp);
+                model_->Move(Game::Direction::kUp);
                 break;
             case UserAction_t::kDown:
-                model_->UpdateState(Snake::Direction::kDown);
+                model_->Move(Game::Direction::kDown);
                 break;
             case UserAction_t::kLeft:
-                model_->UpdateState(Snake::Direction::kLeft);
+                model_->Move(Game::Direction::kLeft);
                 break;
             case UserAction_t::kRight:
-                model_->UpdateState(Snake::Direction::kRight);
+                model_->Move(Game::Direction::kRight);
                 break;
             case UserAction_t::kAction:
+                model_->UpdateState();
+                break;
+            case UserAction_t::kWalls:
+                model_->SetWalls(true);
+                break;
+            case UserAction_t::kNoWalls:
+                model_->SetWalls(false);
                 break;
         }
     }
 
 private:
-    Snake* model_;
+    Game* model_;
 };
 } // namespace s21
 

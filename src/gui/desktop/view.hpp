@@ -2,15 +2,15 @@
 #define BRICKGAME_GUI_DESKTOP_VIEW_HPP
 
 #include <QMainWindow>
-#include <QGraphicsDropShadowEffect>
 #include <QKeyEvent>
-#include <QComboBox>
 #include <QTimer>
 
 #include <memory>
 
 #include "graphic_widget.hpp"
 #include "controller.hpp"
+#include "snake.hpp"
+#include "tetris.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class View; }
@@ -34,14 +34,23 @@ protected:
 private:
     void ChangeGame();
 //    void BtnSoundClicked();
+    void ChangeGameMode();
     void ExecTimerAction();
+    void UpdateState(UserAction_t act);
     void SetShadowEffect(QWidget* wdg);
 
 private:
+    Snake snake_;
+    Tetris tetris_;
+
     Ui::View* ui_;
     QTimer* timer_;
+
+    GameInfo_t game_info_;
+
     Controller *controller_;
-    std::unique_ptr<GraphicWidget> field_;
+    std::unique_ptr<GameField> game_field_;
+    std::unique_ptr<FigureField> figure_field_;
 
     UserAction_t action_{UserAction_t::kUp};
 };

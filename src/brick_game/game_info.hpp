@@ -13,14 +13,17 @@ typedef enum {
     kRight,
     kUp,
     kDown,
-    kAction
+    kAction,
+    kWalls,
+    kNoWalls
 } UserAction_t;
 
 struct GameInfo_t {
 public:
     GameInfo_t() :
         field(field_rows, std::vector<int>(field_cols)),
-        next(figure_rows, std::vector<int>(figure_cols))
+        next(figure_rows, std::vector<int>(figure_cols)),
+        current(figure_rows, std::vector<int>(figure_cols))
     {
         Reset();
     }
@@ -52,11 +55,12 @@ public:
     bool game_over;
     std::vector<std::vector<int>> field;
     std::vector<std::vector<int>> next;
+    std::vector<std::vector<int>> current;
 
     static constexpr int field_rows{20};
     static constexpr int field_cols{10};
-    static constexpr int figure_rows{4};
-    static constexpr int figure_cols{10};
+    static constexpr int figure_rows{2};
+    static constexpr int figure_cols{4};
 };
 } // namespace s21
 

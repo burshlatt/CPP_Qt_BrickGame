@@ -134,6 +134,119 @@
       <string/>
      </property>
     </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>110</y>
+       <width>50</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+	color: white;
+	border: 0px;
+}</string>
+     </property>
+     <property name="text">
+      <string>Level:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbLevel">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>130</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+	color: white;
+	border: 1px solid black;
+	background-color: #4d4e4f;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_12">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>210</y>
+       <width>50</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+	color: white;
+	border: 0px;
+}</string>
+     </property>
+     <property name="text">
+      <string>Next:</string>
+     </property>
+    </widget>
+    <widget class="QGraphicsView" name="gvNextFigure">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>230</y>
+       <width>60</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QGraphicsView {
+	border: 1px solid #303030;
+	background-color: #555555;
+}</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_13">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>160</y>
+       <width>50</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+	color: white;
+	border: 0px;
+}</string>
+     </property>
+     <property name="text">
+      <string>Speed:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbSpeed">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>180</y>
+       <width>60</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QLabel {
+	color: white;
+	border: 1px solid black;
+	background-color: #4d4e4f;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
@@ -560,12 +673,12 @@ QPushButton:pressed {
     </property>
     <item>
      <property name="text">
-      <string>No walls</string>
+      <string>Walls</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>Walls</string>
+      <string>No walls</string>
      </property>
     </item>
    </widget>

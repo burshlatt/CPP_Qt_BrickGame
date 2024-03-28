@@ -22,8 +22,10 @@ set(PROJECT_SOURCES
 
     src/gui/desktop/graphic_widget.hpp
 
+    src/brick_game/game.hpp
     src/brick_game/game_info.hpp
     src/brick_game/snake/snake.hpp
+    src/brick_game/tetris/tetris.hpp
 
     src/controller/controller.hpp
 )
