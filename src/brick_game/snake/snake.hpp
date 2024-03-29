@@ -11,8 +11,8 @@
 namespace s21 {
 class Snake : public Game {
 public:
-    Snake() {
-        is_walls_ = true;
+    Snake(bool walls) {
+        is_walls_ = walls;
 
         std::random_device rd;
         rand_gen_.seed(rd());
@@ -25,10 +25,6 @@ public:
 public:
     GameInfo_t GetGameInfo() const override {
         return game_info_;
-    }
-
-    void SetWalls(bool walls) noexcept override {
-        is_walls_ = walls;
     }
 
 public:

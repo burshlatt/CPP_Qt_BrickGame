@@ -22,7 +22,6 @@ public:
 
 public:
     virtual GameInfo_t GetGameInfo() const = 0;
-    virtual void SetWalls(bool walls) noexcept = 0;
 
 public:
     virtual void Start() = 0;

@@ -13,10 +13,12 @@ private:
     using Figure = std::vector<std::vector<int>>;
 
 public:
-    Tetris() : current_indices_(4, Coords(0, 0)) {
+    Tetris() {
         std::random_device rd;
         rand_gen_.seed(rd());
 
+        GenerateFigure();
+        CopyFigure();
         GenerateFigure();
     }
 
@@ -26,8 +28,6 @@ public:
     GameInfo_t GetGameInfo() const override {
         return game_info_;
     }
-
-    void SetWalls(bool) noexcept override {}
 
 public:
     void Start() override {
@@ -41,6 +41,8 @@ public:
     void ResetState() override {
         game_info_.Reset();
         GenerateFigure();
+        CopyFigure();
+        GenerateFigure();
     }
 
     void Move(Direction direct) override {
@@ -51,10 +53,13 @@ public:
     void UpdateState() override {
         if (!game_info_.pause) {
             if (!MoveFigureDown()) {
-                if (!GenerateFigure())
-                    game_info_.game_over = true;
+                RemoveLine();
 
-//                RemoveLine();
+                if (!CopyFigure()) {
+                    game_info_.game_over = true;
+                } else {
+                    GenerateFigure();
+                }
             }
         }
     }
@@ -70,40 +75,49 @@ private:
                 Rotate();
                 break;
             case Direction::kDown:
+                while (MoveFigureDown());
                 break;
         }
     }
 
-    bool GenerateFigure() {
+    void GenerateFigure() {
         std::uniform_int_distribution<> dist(0, figures_.size() - 1);
 
-        int type{dist(rand_gen_)};
-
-        game_info_.next = figures_[type];
+        game_info_.next.type = dist(rand_gen_);
+        game_info_.next.figure = figures_[game_info_.next.type];
 
         int index{};
 
         for (int i{}; i < GameInfo_t::figure_rows; ++i) {
             for (int j{}; j < GameInfo_t::figure_cols; ++j) {
-                if (game_info_.next[i][j] == 1) {
-                    auto& [row, col]{current_indices_[index]};
+                if (game_info_.next.figure[i][j] == 1) {
+                    auto& [row, col]{game_info_.next.indices[index]};
 
                     row = i;
                     col = j + 3;
-
-                    if (game_info_.field[row][col] == 1)
-                        return false;
 
                     ++index;
                 }
             }
         }
+    }
+
+    bool CopyFigure() {
+        for (auto [row, col] : game_info_.next.indices)
+            if (game_info_.field[row][col] == 1)
+                return false;
+
+        game_info_.current.type = game_info_.next.type;
+        game_info_.current.indices = game_info_.next.indices;
+
+        for (auto [row, col] : game_info_.current.indices)
+            game_info_.field[row][col] = 1;
 
         return true;
     }
 
     bool MoveFigureDown() {
-        for (auto [row, col] : current_indices_) {
+        for (auto [row, col] : game_info_.current.indices) {
             bool is_correct_move{
                 row == GameInfo_t::field_rows - 1 ||
                 (
@@ -118,14 +132,14 @@ private:
 
         ClearPastPositions();
 
-        for (auto& [row, col] : current_indices_)
+        for (auto& [row, col] : game_info_.current.indices)
             game_info_.field[++row][col] = 1;
 
         return true;
     }
 
     bool IsAvailableIndex(int r, int c) {
-        for (auto [row, col] : current_indices_)
+        for (auto [row, col] : game_info_.current.indices)
             if (row == r && col == c)
                 return true;
 
@@ -133,14 +147,16 @@ private:
     }
 
     void ClearPastPositions() {
-        for (auto [row, col] : current_indices_)
+        for (auto [row, col] : game_info_.current.indices)
             game_info_.field[row][col] = 0;
     }
 
     void RemoveLine() {
         int count{};
 
-        for (auto it{game_info_.field.end() - 1}; ; --it) {
+        auto it{game_info_.field.end() - 1};
+
+        do {
             if (IsLineFill(*it)) {
                 std::fill(it->begin(), it->end(), 0);
 
@@ -148,29 +164,30 @@ private:
 
                 MoveFieldDown(it);
 
-                if (it == game_info_.field.begin())
-                    break;
+                ++it;
             }
-        }
+            --it;
+        } while (it != game_info_.field.begin());
 
         if (count != 0)
             ScoreUp(count);
     }
 
     bool IsLineFill(const std::vector<int>& line) {
-        return std::all_of(line.begin(), line.end(), [](int num) {
-            return num == 1;
-        });
+        for (auto num : line)
+            if (num == 0)
+                return false;
+
+        return true;
     }
 
+    void MoveFieldDown(std::vector<std::vector<int>>::iterator current_line) {
+        auto prev_line{current_line - 1};
 
-    void MoveFieldDown(std::vector<std::vector<int>>::iterator line_it) {
-        for (auto it{line_it - 1}; ; --it) {
-            std::copy(it->begin(), it->end(), (it + 1)->begin());
-
-            if (it == game_info_.field.begin())
-                break;
-        }
+        do {
+            std::copy(prev_line->begin(), prev_line->end(), (prev_line + 1)->begin());
+            --prev_line;
+        } while (prev_line != game_info_.field.begin());
     }
 
     void ScoreUp(int count) {
@@ -206,7 +223,7 @@ private:
         if (IsShiftAvailable(direct)) {
             ClearPastPositions();
 
-            for (auto& [row, col] : current_indices_) {
+            for (auto& [row, col] : game_info_.current.indices) {
                 col += direction;
                 game_info_.field[row][col] = 1;
             }
@@ -222,7 +239,7 @@ private:
             direction = 1;
         }
 
-        for (auto [row, col] : current_indices_) {
+        for (auto [row, col] : game_info_.current.indices) {
             bool is_correct_move{
                 col == last_col ||
                 (
@@ -240,11 +257,13 @@ private:
 
     void Rotate() {
         std::vector<Coords> new_indices(4, Coords(0, 0));
-        auto [center_r, center_c]{current_indices_[1]};
-
+        auto [center_r, center_c]{game_info_.current.indices[2]};
+        bool can_rotate = true;
         int index{};
 
-        for (auto [rel_row, rel_col] : current_indices_) {
+        ClearPastPositions();
+
+        for (auto [rel_row, rel_col] : game_info_.current.indices) {
             rel_row -= center_r;
             rel_col -= center_c;
 
@@ -256,28 +275,33 @@ private:
             if (new_r < 0 || new_r >= GameInfo_t::field_rows ||
                 new_c < 0 || new_c >= GameInfo_t::field_cols ||
                 game_info_.field[new_r][new_c] == 1) {
-                return;
+                can_rotate = false;
+                break;
             }
 
             ++index;
         }
 
-        ClearPastPositions();
+        if (can_rotate && game_info_.current.type != 3) {
+            index = 0;
 
-        for (std::size_t i{}; i < current_indices_.size(); ++i) {
-            current_indices_[i].first = new_indices[i].first;
-            current_indices_[i].second = new_indices[i].second;
+            for (auto& [row, col] : game_info_.current.indices) {
+                auto [new_row, new_col]{new_indices[index]};
+                row = new_row;
+                col = new_col;
+                ++index;
+            }
         }
 
-        for (auto [row, col] : current_indices_)
+        for (auto [row, col] : game_info_.current.indices) {
             game_info_.field[row][col] = 1;
+        }
     }
 
 private:
-    std::mt19937 rand_gen_;
     GameInfo_t game_info_;
 
-    std::vector<Coords> current_indices_;
+    std::mt19937 rand_gen_;
 
     std::vector<std::vector<std::vector<int>>> figures_{
         {

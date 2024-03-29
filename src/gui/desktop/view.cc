@@ -116,20 +116,21 @@ void View::ChangeGame() {
         ui_->cbWalls->setVisible(true);
         ui_->gvNextFigure->setVisible(false);
         ui_->label_12->setVisible(false);
-        controller_->SetModel(&snake_);
+        ui_->cbWalls->setCurrentIndex(0);
+        controller_->SetGame(ModelFacade::Game_t::kSnakeWalls);
     } else if (ui_->cbGame->currentIndex() == 1) {
         ui_->cbWalls->setVisible(false);
         ui_->gvNextFigure->setVisible(true);
         ui_->label_12->setVisible(true);
-        controller_->SetModel(&tetris_);
+        controller_->SetGame(ModelFacade::Game_t::kTetris);
     }
 }
 
 void View::ChangeGameMode() {
     if (ui_->cbWalls->currentIndex() == 0) {
-        controller_->UserInput(UserAction_t::kWalls);
+        controller_->SetGame(ModelFacade::Game_t::kSnakeWalls);
     } else if (ui_->cbWalls->currentIndex() == 1) {
-        controller_->UserInput(UserAction_t::kNoWalls);
+        controller_->SetGame(ModelFacade::Game_t::kSnakeNoWalls);
     }
 }
 

@@ -14,17 +14,24 @@ typedef enum {
     kUp,
     kDown,
     kAction,
-    kWalls,
-    kNoWalls
 } UserAction_t;
 
 struct GameInfo_t {
+private:
+    struct Figure_t {
+        Figure_t() :
+            type(0),
+            figure(figure_rows, std::vector<int>(figure_cols)),
+            indices(4, std::pair<int, int>(0, 0))
+        {}
+
+        int type;
+        std::vector<std::vector<int>> figure;
+        std::vector<std::pair<int, int>> indices;
+    };
+
 public:
-    GameInfo_t() :
-        field(field_rows, std::vector<int>(field_cols)),
-        next(figure_rows, std::vector<int>(figure_cols)),
-        current(figure_rows, std::vector<int>(figure_cols))
-    {
+    GameInfo_t() : field(field_rows, std::vector<int>(field_cols)) {
         Reset();
     }
 
@@ -35,8 +42,8 @@ public:
         for(auto& row : field)
             std::fill(row.begin(), row.end(), 0);
 
-        for(auto& row : next)
-            std::fill(row.begin(), row.end(), 0);
+        next = Figure_t();
+        current = Figure_t();
 
         score = 0;
         high_score = 0;
@@ -51,11 +58,14 @@ public:
     int high_score;
     int level;
     int speed;
+
     bool pause;
     bool game_over;
+
+    Figure_t next;
+    Figure_t current;
+
     std::vector<std::vector<int>> field;
-    std::vector<std::vector<int>> next;
-    std::vector<std::vector<int>> current;
 
     static constexpr int field_rows{20};
     static constexpr int field_cols{10};

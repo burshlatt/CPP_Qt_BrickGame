@@ -95,7 +95,7 @@ public:
 
         for (int row = 0; row < rows_; ++row)
             for (int col = 0; col < cols_; ++col)
-                if (info.next[row][col] == 1)
+                if (info.next.figure[row][col] == 1)
                     DrawDot(row, col, QBrush(Qt::green));
     }
 

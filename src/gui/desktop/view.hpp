@@ -7,10 +7,8 @@
 
 #include <memory>
 
-#include "graphic_widget.hpp"
 #include "controller.hpp"
-#include "snake.hpp"
-#include "tetris.hpp"
+#include "graphic_widget.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class View; }
@@ -40,15 +38,12 @@ private:
     void SetShadowEffect(QWidget* wdg);
 
 private:
-    Snake snake_;
-    Tetris tetris_;
-
     Ui::View* ui_;
     QTimer* timer_;
 
     GameInfo_t game_info_;
 
-    Controller *controller_;
+    Controller* controller_;
     std::unique_ptr<GameField> game_field_;
     std::unique_ptr<FigureField> figure_field_;
 

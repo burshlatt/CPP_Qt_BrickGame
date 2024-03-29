@@ -28,6 +28,7 @@ set(PROJECT_SOURCES
     src/brick_game/tetris/tetris.hpp
 
     src/controller/controller.hpp
+    src/brick_game/facade/model_facade.hpp
 )
 
 qt_add_executable(BrickGame
@@ -43,6 +44,7 @@ include_directories(
     src/brick_game
     src/brick_game/snake
     src/brick_game/tetris
+    src/brick_game/facade
 )
 
 set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.BrickGame)
