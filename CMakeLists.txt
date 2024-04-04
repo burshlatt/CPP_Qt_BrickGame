@@ -14,21 +14,20 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wextra -O3")
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
-    main.cc
+    src/main.cc
 
-    src/gui/desktop/view.cc
-    src/gui/desktop/view.hpp
-    src/gui/desktop/view.ui
+    src/view/view.cc
+    src/view/view.hpp
+    src/view/view.ui
+    src/view/graphic_widget.hpp
 
-    src/gui/desktop/graphic_widget.hpp
+    src/model/games/game.hpp
 
-    src/brick_game/game.hpp
-    src/brick_game/game_info.hpp
-    src/brick_game/snake/snake.hpp
-    src/brick_game/tetris/tetris.hpp
+    src/model/games/snake/snake.hpp
+    src/model/games/tetris/tetris.hpp
 
     src/controller/controller.hpp
-    src/brick_game/facade/model_facade.hpp
+    src/model/facade/model_facade.hpp
 )
 
 qt_add_executable(BrickGame
@@ -39,12 +38,12 @@ qt_add_executable(BrickGame
 target_link_libraries(BrickGame PRIVATE Qt6::Widgets)
 
 include_directories(
+    src/view
+    src/model/facade
+    src/model/games
+    src/model/games/snake
+    src/model/games/tetris
     src/controller
-    src/gui/desktop
-    src/brick_game
-    src/brick_game/snake
-    src/brick_game/tetris
-    src/brick_game/facade
 )
 
 set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.BrickGame)

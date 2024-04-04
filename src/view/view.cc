@@ -1,11 +1,11 @@
-#include <QGraphicsDropShadowEffect>
 #include <QComboBox>
+#include <QGraphicsDropShadowEffect>
 
 #include "view.hpp"
 #include "ui_view.h"
 
 namespace s21 {
-View::View(Controller* contr, QWidget *parent) :
+View::View(Controller* contr, QWidget* parent) :
     QMainWindow(parent),
     ui_(new Ui::View),
     timer_(new QTimer),
@@ -83,7 +83,7 @@ void View::SetShadowEffect(QWidget* wdg) {
     wdg->setGraphicsEffect(shadow);
 }
 
-//void View::BtnSoundClicked() {
+// void View::BtnSoundClicked() {
 
 //}
 
@@ -154,30 +154,30 @@ void View::focusOutEvent(QFocusEvent* event) {
 
 void View::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
-        case Qt::Key_R:
-            UpdateState(UserAction_t::kStart);
-            break;
-        case Qt::Key_Space:
-            UpdateState(UserAction_t::kTerminate);
-            break;
-        case Qt::Key_P:
-            controller_->UserInput(UserAction_t::kPause);
-            break;
-        case Qt::Key_Up:
-            UpdateState(UserAction_t::kUp);
-            break;
-        case Qt::Key_Down:
-            UpdateState(UserAction_t::kDown);
-            break;
-        case Qt::Key_Left:
-            UpdateState(UserAction_t::kLeft);
-            break;
-        case Qt::Key_Right:
-            UpdateState(UserAction_t::kRight);
-            break;
-        default:
-            QWidget::keyPressEvent(event);
-            break;
+    case Qt::Key_R:
+        UpdateState(UserAction_t::kStart);
+        break;
+    case Qt::Key_Space:
+        UpdateState(UserAction_t::kTerminate);
+        break;
+    case Qt::Key_P:
+        controller_->UserInput(UserAction_t::kPause);
+        break;
+    case Qt::Key_Up:
+        UpdateState(UserAction_t::kUp);
+        break;
+    case Qt::Key_Down:
+        UpdateState(UserAction_t::kDown);
+        break;
+    case Qt::Key_Left:
+        UpdateState(UserAction_t::kLeft);
+        break;
+    case Qt::Key_Right:
+        UpdateState(UserAction_t::kRight);
+        break;
+    default:
+        QWidget::keyPressEvent(event);
+        break;
     }
 }
-} // namespace s21
+}  // namespace s21

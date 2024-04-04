@@ -32,9 +32,9 @@ public:
         if (game == Game_t::kTetris) {
             game_ = std::make_unique<Tetris>();
         } else if (game == Game_t::kSnakeWalls) {
-            game_ = std::make_unique<Snake>(true);
+            game_ = std::make_unique<Snake>(Snake::Mode::kWall);
         } else if (game == Game_t::kSnakeNoWalls) {
-            game_ = std::make_unique<Snake>(false);
+            game_ = std::make_unique<Snake>(Snake::Mode::kNoWall);
         }
     }
 
@@ -42,7 +42,7 @@ public:
     void UserInput(UserAction_t action) {
         switch (action) {
         case UserAction_t::kStart:
-            game_->Start();
+            game_->SigAct(Game::State::kSTART, Game::Direction::kUp);
             break;
         case UserAction_t::kTerminate:
             game_->ResetState();
@@ -51,19 +51,19 @@ public:
             game_->Stop();
             break;
         case UserAction_t::kUp:
-            game_->Move(Game::Direction::kUp);
+            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kUp);
             break;
         case UserAction_t::kDown:
-            game_->Move(Game::Direction::kDown);
+            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kDown);
             break;
         case UserAction_t::kLeft:
-            game_->Move(Game::Direction::kLeft);
+            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kLeft);
             break;
         case UserAction_t::kRight:
-            game_->Move(Game::Direction::kRight);
+            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kRight);
             break;
         case UserAction_t::kAction:
-            game_->UpdateState();
+            game_->SigAct(Game::State::kMOVING, Game::Direction::kUp);
             break;
         }
     }
@@ -71,6 +71,6 @@ public:
 private:
     std::unique_ptr<Game> game_;
 };
-} // namespace s21
+}  // namespace s21
 
-#endif // BRICKGAME_BRICK_GAME_FACADE_GAME_FACADE_HPP
+#endif  // BRICKGAME_BRICK_GAME_FACADE_GAME_FACADE_HPP
