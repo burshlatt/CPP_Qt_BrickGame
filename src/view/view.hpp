@@ -1,10 +1,11 @@
 #ifndef BRICKGAME_GUI_DESKTOP_VIEW_HPP
 #define BRICKGAME_GUI_DESKTOP_VIEW_HPP
 
-#include <QKeyEvent>
-#include <QMainWindow>
-#include <QTimer>
 #include <memory>
+
+#include <QMainWindow>
+#include <QKeyEvent>
+#include <QTimer>
 
 #include "controller.hpp"
 #include "graphic_widget.hpp"
@@ -17,38 +18,36 @@ QT_END_NAMESPACE
 
 namespace s21 {
 class View : public QMainWindow {
-  Q_OBJECT
+    Q_OBJECT
 
- public:
-  View(Controller* contr, QWidget* parent = nullptr);
-  ~View();
+public:
+    View(Controller* contr, QWidget* parent = nullptr);
+    ~View();
 
- protected:
-  bool focusNextPrevChild(bool) override;
-  void showEvent(QShowEvent* event) override;
-  void focusInEvent(QFocusEvent* event) override;
-  void focusOutEvent(QFocusEvent* event) override;
-  void keyPressEvent(QKeyEvent* event) override;
+private:
+    bool focusNextPrevChild(bool) override;
+    void showEvent(QShowEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+    void focusOutEvent(QFocusEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
- private:
-  void ChangeGame();
-  //    void BtnSoundClicked();
-  void ChangeGameMode();
-  void ExecTimerAction();
-  void UpdateState(UserAction_t act);
-  void SetShadowEffect(QWidget* wdg);
+private:
+    void ChangeGame();
+    //    void BtnSoundClicked();
+    void ChangeGameMode();
+    void ExecTimerAction();
+    void UpdateState(UserAction_t act);
+    void SetShadowEffect(QWidget* wdg);
 
- private:
-  Ui::View* ui_;
-  QTimer* timer_;
+private:
+    std::unique_ptr<Ui::View> ui_;
+    std::unique_ptr<QTimer> timer_;
 
-  GameInfo_t game_info_;
+    std::unique_ptr<GraphicField> game_field_;
+    std::unique_ptr<GraphicField> figure_field_;
 
-  Controller* controller_;
-  std::unique_ptr<GameField> game_field_;
-  std::unique_ptr<FigureField> figure_field_;
-
-  UserAction_t action_{UserAction_t::kUp};
+    GameInfo_t game_info_;
+    Controller* controller_;
 };
 }  // namespace s21
 

@@ -7,8 +7,8 @@
 namespace s21 {
 View::View(Controller* contr, QWidget* parent) :
     QMainWindow(parent),
-    ui_(new Ui::View),
-    timer_(new QTimer),
+    ui_(std::make_unique<Ui::View>()),
+    timer_(std::make_unique<QTimer>()),
     controller_(contr)
 {
     ui_->setupUi(this);
@@ -28,12 +28,12 @@ View::View(Controller* contr, QWidget* parent) :
     ui_->label_12->setVisible(false);
     ui_->gvNextFigure->setVisible(false);
 
-    game_field_ = std::make_unique<GameField>(ui_->gvField);
-    figure_field_ = std::make_unique<FigureField>(ui_->gvNextFigure);
+    game_field_ = std::make_unique<GraphicField>(FieldType::kGameField, ui_->gvField);
+    figure_field_ = std::make_unique<GraphicField>(FieldType::kFigureField, ui_->gvNextFigure);
 
     timer_->start(game_info_.speed);
 
-    connect(timer_, &QTimer::timeout, this, &View::ExecTimerAction);
+    connect(timer_.get(), &QTimer::timeout, this, &View::ExecTimerAction);
     connect(ui_->cbGame, &QComboBox::currentIndexChanged, this, &View::ChangeGame);
     connect(ui_->cbWalls, &QComboBox::currentIndexChanged, this, &View::ChangeGameMode);
 
@@ -66,11 +66,7 @@ View::View(Controller* contr, QWidget* parent) :
     });
 }
 
-View::~View() {
-    timer_->stop();
-    delete timer_;
-    delete ui_;
-}
+View::~View() {}
 
 void View::SetShadowEffect(QWidget* wdg) {
     QGraphicsDropShadowEffect* shadow{new QGraphicsDropShadowEffect()};
