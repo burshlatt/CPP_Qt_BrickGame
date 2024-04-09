@@ -12,7 +12,7 @@ View::View(Controller* contr, QWidget* parent) :
     controller_(contr)
 {
     ui_->setupUi(this);
-    setFixedSize(350, 630);
+    setFixedSize(350, 620);
     setFocusPolicy(Qt::StrongFocus);
 
     SetShadowEffect(ui_->frPanel);
@@ -86,8 +86,8 @@ void View::SetShadowEffect(QWidget* wdg) {
 void View::UpdateState(UserAction_t act) {
     controller_->UserInput(act);
     game_info_ = controller_->UpdateCurrentState();
-    game_field_->Draw(game_info_);
-    figure_field_->Draw(game_info_);
+    game_field_->Draw(game_info_.field);
+    figure_field_->Draw(game_info_.next.figure);
 }
 
 void View::ExecTimerAction() {

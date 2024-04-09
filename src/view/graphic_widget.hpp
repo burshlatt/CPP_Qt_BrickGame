@@ -8,8 +8,6 @@
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
 
-#include "game.hpp"
-
 namespace s21 {
 enum class FieldType : bool {
     kGameField,
@@ -18,15 +16,20 @@ enum class FieldType : bool {
 
 class GraphicField : public QGraphicsView {
 public:
-    GraphicField(FieldType ft, QGraphicsView* wdg = nullptr) : QGraphicsView(wdg) {
-        scene_ = std::make_unique<QGraphicsScene>(this);
+    using Field = std::vector<std::vector<int>>;
+
+public:
+    GraphicField(FieldType type, QGraphicsView* wdg = nullptr) :
+        QGraphicsView(wdg),
+        scene_(std::make_unique<QGraphicsScene>(this))
+    {
         setScene(scene_.get());
         scene_->addRect(0, 0, wdg->width(), wdg->height());
 
-        if (ft == FieldType::kGameField) {
+        if (type == FieldType::kGameField) {
             rows_ = 20;
             cols_ = 10;
-        } else if (ft == FieldType::kFigureField) {
+        } else if (type == FieldType::kFigureField) {
             rows_ = 2;
             cols_ = 4;
         }
@@ -35,20 +38,19 @@ public:
         cell_h_ = static_cast<qreal>(wdg->height() / rows_);
     }
 
-    ~GraphicField() {
-        ClearScene();
-    }
+    ~GraphicField() = default;
 
 public:
-    void Draw(const GameInfo_t& info) {
-        ClearScene();
+    void Draw(const Field& field) {
+        dots_.clear();
+        scene_->clear();
         setScene(scene_.get());
 
-        for (int row = 0; row < rows_; ++row) {
-            for (int col = 0; col < cols_; ++col) {
-                if (info.field[row][col] == 1) {
+        for (int row{}; row < rows_; ++row) {
+            for (int col{}; col < cols_; ++col) {
+                if (field[row][col] == 1) {
                     DrawDot(row, col, QBrush(Qt::green));
-                } else if (info.field[row][col] == 2) {
+                } else if (field[row][col] == 2) {
                     DrawDot(row, col, QBrush(Qt::red));
                 }
             }
@@ -64,11 +66,6 @@ private:
 
         dots_.back()->setBrush(brush);
         scene_->addItem(dots_.back().get());
-    }
-
-    void ClearScene() {
-        dots_.clear();
-        scene_->clear();
     }
 
 private:
