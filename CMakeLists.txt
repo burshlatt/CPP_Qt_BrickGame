@@ -33,6 +33,7 @@ set(PROJECT_SOURCES
 qt_add_executable(BrickGame
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
+    resources/resources.qrc
 )
 
 target_link_libraries(BrickGame PRIVATE Qt6::Widgets)

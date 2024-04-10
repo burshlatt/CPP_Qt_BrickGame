@@ -42,7 +42,7 @@ public:
     void UserInput(UserAction_t action) {
         switch (action) {
         case UserAction_t::kStart:
-            game_->SigAct(Game::State::kSTART, Game::Direction::kUp);
+            game_->SigAct(Game::State::kStart, Game::Direction::kUp);
             break;
         case UserAction_t::kTerminate:
             game_->ResetState();
@@ -51,19 +51,19 @@ public:
             game_->Stop();
             break;
         case UserAction_t::kUp:
-            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kUp);
+            game_->SigAct(Game::State::kShifting, Game::Direction::kUp);
             break;
         case UserAction_t::kDown:
-            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kDown);
+            game_->SigAct(Game::State::kShifting, Game::Direction::kDown);
             break;
         case UserAction_t::kLeft:
-            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kLeft);
+            game_->SigAct(Game::State::kShifting, Game::Direction::kLeft);
             break;
         case UserAction_t::kRight:
-            game_->SigAct(Game::State::kSHIFTING, Game::Direction::kRight);
+            game_->SigAct(Game::State::kShifting, Game::Direction::kRight);
             break;
         case UserAction_t::kAction:
-            game_->SigAct(Game::State::kMOVING, Game::Direction::kUp);
+            game_->SigAct(Game::State::kMoving, Game::Direction::kUp);
             break;
         }
     }

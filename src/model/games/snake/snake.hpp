@@ -2,7 +2,6 @@
 #define BRICKGAME_BRICK_GAME_SNAKE_SNAKE_HPP
 
 #include <algorithm>
-#include <fstream>
 #include <random>
 #include <vector>
 
@@ -24,8 +23,6 @@ public:
         rand_gen_.seed(rd());
 
         Reset();
-
-        GetHighScore();
     }
 
 public:
@@ -45,34 +42,27 @@ public:
     void SigAct(State state, Direction direct) override {
         while (true) {
             switch (state) {
-            case State::kSTART:
-                GetHighScore();
+            case State::kStart:
                 game_info_.pause = false;
-                state = State::kSPAWN;
+                state = State::kSpawn;
                 break;
-            case State::kSPAWN:
+            case State::kSpawn:
                 MergeField();
-                state = State::kMOVING;
+                state = State::kMoving;
                 break;
-            case State::kMOVING:
-                if (can_do_) {
-                    UpdateState();
-                    state = State::kREACH;
-                } else {
-                    can_do_ = true;
-                    return;
-                }
+            case State::kMoving:
+                Move();
+                state = State::kReach;
                 break;
-            case State::kSHIFTING:
-                can_do_ = false;
-                Move(direct);
-                state = State::kREACH;
+            case State::kShifting:
+                Shift(direct);
+                state = State::kReach;
                 break;
-            case State::kREACH:
+            case State::kReach:
                 CheckApple();
                 return;
                 break;
-            case State::kGAMEOVER:
+            case State::kGameOver:
                 game_info_.game_over = true;
                 return;
                 break;
@@ -81,23 +71,8 @@ public:
     }
 
 private:
-    void GetHighScore() {
-        std::ifstream file("../../../../datasets/score_snake.txt", std::ios::in);
-
-        if (file.is_open())
-            file >> game_info_.high_score;
-    }
-
-    void SetHighScore(int high) {
-        std::ofstream file("../../../../datasets/score_snake.txt", std::ios::out);
-
-        if (file.is_open())
-            file << high;
-    }
-
-    void Move(Direction direct) {
+    void Move() {
         if (!game_info_.pause) {
-            UpdateDirection(direct);
             ClearField();
             MoveTail(dots_.begin() + 1);
             MoveHead();
@@ -111,18 +86,10 @@ private:
         }
     }
 
-    void UpdateState() {
+    void Shift(Direction direct) {
         if (!game_info_.pause) {
-            ClearField();
-            MoveTail(dots_.begin() + 1);
-            MoveHead();
-
-            if (CheckCollide()) {
-                game_info_.game_over = true;
-                return;
-            }
-
-            MergeField();
+            UpdateDirection(direct);
+            Move();
         }
     }
 
@@ -241,13 +208,7 @@ private:
 
             ++game_info_.score;
 
-            if (game_info_.score > game_info_.high_score) {
-                SetHighScore(game_info_.score);
-                GetHighScore();
-            }
-
             LevelUp();
-
             MergeField();
         }
     }
@@ -327,7 +288,6 @@ private:
     std::vector<Coords> dots_;
 
     bool is_walls_;
-    bool can_do_;
 
     std::mt19937 rand_gen_;
 

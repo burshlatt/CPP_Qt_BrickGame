@@ -13,7 +13,7 @@ typedef enum {
     kRight,
     kUp,
     kDown,
-    kAction,
+    kAction
 } UserAction_t;
 
 struct GameInfo_t {
@@ -85,12 +85,12 @@ public:
     };
 
     enum class State {
-        kSTART,
-        kSPAWN,
-        kMOVING,
-        kSHIFTING,
-        kREACH,
-        kGAMEOVER
+        kStart,
+        kSpawn,
+        kMoving,
+        kShifting,
+        kReach,
+        kGameOver
     };
 
 public:

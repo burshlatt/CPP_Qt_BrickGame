@@ -2,7 +2,6 @@
 #define BRICKGAME_BRICK_GAME_TETRIS_TETRIS_HPP
 
 #include <algorithm>
-#include <fstream>
 #include <random>
 
 #include "game.hpp"
@@ -20,8 +19,6 @@ public:
         GenerateFigure();
         CopyFigure();
         GenerateFigure();
-
-        GetHighScore();
     }
 
 public:
@@ -44,35 +41,34 @@ public:
     void SigAct(State state, Direction direct) override {
         while (true) {
             switch (state) {
-            case State::kSTART:
-                GetHighScore();
+            case State::kStart:
                 game_info_.pause = false;
-                state = State::kMOVING;
+                state = State::kMoving;
                 break;
-            case State::kSPAWN:
+            case State::kSpawn:
                 if (!CopyFigure()) {
-                    state = State::kGAMEOVER;
+                    state = State::kGameOver;
                 } else {
                     GenerateFigure();
                     return;
                 }
                 break;
-            case State::kMOVING:
+            case State::kMoving:
                 if (!game_info_.pause && !MoveFigureDown()) {
-                    state = State::kREACH;
+                    state = State::kReach;
                 } else {
                     return;
                 }
                 break;
-            case State::kSHIFTING:
+            case State::kShifting:
                 Move(direct);
                 return;
                 break;
-            case State::kREACH:
+            case State::kReach:
                 RemoveLine();
-                state = State::kSPAWN;
+                state = State::kSpawn;
                 break;
-            case State::kGAMEOVER:
+            case State::kGameOver:
                 game_info_.game_over = true;
                 ResetState();
                 return;
@@ -82,20 +78,6 @@ public:
     }
 
 private:
-    void GetHighScore() {
-        std::ifstream file("../../../../datasets/score_tetris.txt", std::ios::in);
-
-        if (file.is_open())
-            file >> game_info_.high_score;
-    }
-
-    void SetHighScore(int high) {
-        std::ofstream file("../../../../datasets/score_tetris.txt", std::ios::out);
-
-        if (file.is_open())
-            file << high;
-    }
-
     void Move(Direction direct) {
         if (!game_info_.pause)
             MakeTransformations(direct);
@@ -251,11 +233,6 @@ private:
         case 4:
             game_info_.score += 1500;
             break;
-        }
-
-        if (game_info_.score > game_info_.high_score) {
-            SetHighScore(game_info_.score);
-            GetHighScore();
         }
 
         LevelUp();
