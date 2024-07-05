@@ -10,6 +10,10 @@
 #include "controller.hpp"
 #include "graphic_widget.hpp"
 
+#define SNAKE 0
+#define WALLS 0
+#define NO_WALLS 1
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class View;
@@ -36,8 +40,12 @@ private:
     //    void BtnSoundClicked();
     void ChangeGameMode();
     void ExecTimerAction();
+    void BtnStartClicked();
+    void BtnResetClicked();
+    void BtnPauseClicked();
     void UpdateState(UserAction_t act);
     void SetShadowEffect(QWidget* wdg);
+    void ShiftClicked(UserAction_t act);
 
 private:
     std::unique_ptr<Ui::View> ui_;

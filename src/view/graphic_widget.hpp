@@ -2,11 +2,17 @@
 #define BRICKGAME_GUI_DESKTOP_GPRAPHIC_WIDGET_HPP
 
 #include <memory>
+#include <random>
 #include <vector>
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
+
+#define GAME_FIELD_ROWS 20
+#define GAME_FIELD_COLS 10
+#define FIGURE_FIELD_ROWS 2
+#define FIGURE_FIELD_COLS 4
 
 namespace s21 {
 enum class FieldType : bool {
@@ -27,11 +33,11 @@ public:
         scene_->addRect(0, 0, wdg->width(), wdg->height());
 
         if (type == FieldType::kGameField) {
-            rows_ = 20;
-            cols_ = 10;
+            rows_ = GAME_FIELD_ROWS;
+            cols_ = GAME_FIELD_COLS;
         } else if (type == FieldType::kFigureField) {
-            rows_ = 2;
-            cols_ = 4;
+            rows_ = FIGURE_FIELD_ROWS;
+            cols_ = FIGURE_FIELD_COLS;
         }
 
         cell_w_ = static_cast<qreal>(wdg->width() / cols_);
@@ -46,9 +52,12 @@ public:
         scene_->clear();
         setScene(scene_.get());
 
+        // auto color{GetRandomColor()};
+
         for (int row{}; row < rows_; ++row) {
             for (int col{}; col < cols_; ++col) {
                 if (field[row][col] == 1) {
+                    // DrawDot(row, col, QBrush(color));
                     DrawDot(row, col, QBrush(Qt::green));
                 } else if (field[row][col] == 2) {
                     DrawDot(row, col, QBrush(Qt::red));
@@ -66,6 +75,22 @@ private:
 
         dots_.back()->setBrush(brush);
         scene_->addItem(dots_.back().get());
+    }
+
+    Qt::GlobalColor GetRandomColor() {
+        static constexpr Qt::GlobalColor colors[5]{
+            Qt::red,
+            Qt::green,
+            Qt::blue,
+            Qt::yellow,
+            Qt::white
+        };
+
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_int_distribution<> dist(0, 4);
+
+        return colors[dist(gen)];
     }
 
 private:

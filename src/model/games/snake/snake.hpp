@@ -8,7 +8,7 @@
 #include "game.hpp"
 
 namespace s21 {
-class Snake : public Game {
+class Snake final : public Game {
 public:
     enum class Mode : bool {
         kWall,
@@ -19,27 +19,16 @@ public:
     Snake(Mode mode) {
         is_walls_ = mode == Mode::kWall;
 
-        std::random_device rd;
-        rand_gen_.seed(rd());
-
-        Reset();
+        ResetState();
     }
 
 public:
-    GameInfo_t GetGameInfo() const override {
+    const GameInfo_t& GetGameInfo() const final {
         return game_info_;
     }
 
 public:
-    void Stop() noexcept override {
-        game_info_.pause = true;
-    }
-
-    void ResetState() override {
-        Reset();
-    }
-
-    void SigAct(State state, Direction direct) override {
+    void SigAct(State state, Direction direct) final {
         while (true) {
             switch (state) {
             case State::kStart:
@@ -47,7 +36,7 @@ public:
                 state = State::kSpawn;
                 break;
             case State::kSpawn:
-                MergeField();
+                MergeFields();
                 state = State::kMoving;
                 break;
             case State::kMoving:
@@ -59,11 +48,15 @@ public:
                 state = State::kReach;
                 break;
             case State::kReach:
-                CheckApple();
+                HandleAppleCollision();
+                return;
+                break;
+            case State::kPause:
+                game_info_.pause = true;
                 return;
                 break;
             case State::kGameOver:
-                game_info_.game_over = true;
+                ResetState();
                 return;
                 break;
             }
@@ -71,30 +64,7 @@ public:
     }
 
 private:
-    void Move() {
-        if (!game_info_.pause) {
-            ClearField();
-            MoveTail(dots_.begin() + 1);
-            MoveHead();
-
-            if (CheckCollide()) {
-                game_info_.game_over = true;
-                return;
-            }
-
-            MergeField();
-        }
-    }
-
-    void Shift(Direction direct) {
-        if (!game_info_.pause) {
-            UpdateDirection(direct);
-            Move();
-        }
-    }
-
-    void Reset() {
-        dots_.clear();
+    void ResetState() {
         dots_ = {
             Coords(5, 10), Coords(5, 11),
             Coords(5, 12), Coords(5, 13)
@@ -106,23 +76,41 @@ private:
         GenerateApple();
     }
 
+    void Move() {
+        if (!game_info_.pause) {
+            ClearField();
+            MoveTail(dots_.begin() + 1);
+            MoveHead();
+
+            if (IsCollision()) {
+                ResetState();
+                return;
+            }
+
+            MergeFields();
+        }
+    }
+
+    void Shift(Direction direct) {
+        if (!game_info_.pause) {
+            UpdateDirection(direct);
+            Move();
+        }
+    }
+
     void UpdateDirection(Direction direct) noexcept {
         switch (direct) {
         case Direction::kUp:
-            if (direction_ != Direction::kDown)
-                direction_ = direct;
+            direction_ = direction_ != Direction::kDown ? direct : direction_;
             break;
         case Direction::kDown:
-            if (direction_ != Direction::kUp)
-                direction_ = direct;
+            direction_ = direction_ != Direction::kUp ? direct : direction_;
             break;
         case Direction::kLeft:
-            if (direction_ != Direction::kRight)
-                direction_ = direct;
+            direction_ = direction_ != Direction::kRight ? direct : direction_;
             break;
         case Direction::kRight:
-            if (direction_ != Direction::kLeft)
-                direction_ = direct;
+            direction_ = direction_ != Direction::kLeft ? direct : direction_;
             break;
         }
     }
@@ -163,23 +151,23 @@ private:
             СorrectMovement(head);
     }
 
-    bool CheckCollide() {
+    bool IsCollision() {
         auto head{dots_.begin()};
-        bool is_collide{false};
+        bool is_collision{false};
 
         if (is_walls_) {
-            is_collide = CheckCollisionWithWalls(head);
+            is_collision = IsWallCollision(head);
 
-            if (is_collide)
-                return is_collide;
+            if (is_collision)
+                return is_collision;
         }
 
-        is_collide = CheckCollision();
+        is_collision = IsTailCollision();
 
-        return is_collide;
+        return is_collision;
     }
 
-    bool CheckCollision() {
+    bool IsTailCollision() {
         auto count{std::count(dots_.begin(), dots_.end(), dots_.front())};
 
         if (count > 1)
@@ -188,7 +176,7 @@ private:
         return false;
     }
 
-    bool CheckCollisionWithWalls(std::vector<Coords>::iterator it) noexcept {
+    bool IsWallCollision(std::vector<Coords>::iterator it) noexcept {
         auto& [x, y]{*it};
 
         if (x < 0 || y < 0) {
@@ -201,7 +189,7 @@ private:
         return false;
     }
 
-    void CheckApple() {
+    void HandleAppleCollision() {
         if (dots_.front() == apple_) {
             AddDot();
             GenerateApple();
@@ -209,7 +197,7 @@ private:
             ++game_info_.score;
 
             LevelUp();
-            MergeField();
+            MergeFields();
         }
     }
 
@@ -251,19 +239,21 @@ private:
     }
 
     void GenerateApple() {
-        std::uniform_int_distribution<> dist_x(0, GameInfo_t::field_cols - 1);
-        std::uniform_int_distribution<> dist_y(0, GameInfo_t::field_rows - 1);
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        static std::uniform_int_distribution<> dist_x(0, GameInfo_t::field_cols - 1);
+        static std::uniform_int_distribution<> dist_y(0, GameInfo_t::field_rows - 1);
 
         auto& [x, y]{apple_};
 
-        x = dist_x(rand_gen_);
-        y = dist_y(rand_gen_);
+        x = dist_x(gen);
+        y = dist_y(gen);
 
         auto it{std::find(dots_.begin(), dots_.end(), apple_)};
 
         while (it != dots_.end()) {
-            x = dist_x(rand_gen_);
-            y = dist_y(rand_gen_);
+            x = dist_x(gen);
+            y = dist_y(gen);
 
             it = std::find(dots_.begin(), dots_.end(), apple_);
         }
@@ -275,7 +265,7 @@ private:
                 game_info_.field[i][j] = 0;
     }
 
-    void MergeField() noexcept {
+    void MergeFields() noexcept {
         for (const auto& [x, y] : dots_)
             game_info_.field[y][x] = 1;
 
@@ -288,8 +278,6 @@ private:
     std::vector<Coords> dots_;
 
     bool is_walls_;
-
-    std::mt19937 rand_gen_;
 
     Direction direction_;
     GameInfo_t game_info_;

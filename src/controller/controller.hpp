@@ -21,7 +21,7 @@ public:
         game_->UserInput(action);
     }
 
-    GameInfo_t UpdateCurrentState() const {
+    const GameInfo_t& UpdateCurrentState() const {
         return game_->UpdateCurrentState();
     }
 

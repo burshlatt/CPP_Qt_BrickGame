@@ -24,7 +24,7 @@ public:
     ~ModelFacade() = default;
 
 public:
-    GameInfo_t UpdateCurrentState() const {
+    const GameInfo_t& UpdateCurrentState() const {
         return game_->GetGameInfo();
     }
 
@@ -45,10 +45,10 @@ public:
             game_->SigAct(Game::State::kStart, Game::Direction::kUp);
             break;
         case UserAction_t::kTerminate:
-            game_->ResetState();
+            game_->SigAct(Game::State::kGameOver, Game::Direction::kUp);
             break;
         case UserAction_t::kPause:
-            game_->Stop();
+            game_->SigAct(Game::State::kPause, Game::Direction::kUp);
             break;
         case UserAction_t::kUp:
             game_->SigAct(Game::State::kShifting, Game::Direction::kUp);

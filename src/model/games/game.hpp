@@ -16,20 +16,22 @@ typedef enum {
     kAction
 } UserAction_t;
 
+struct Figure_t {
+    Figure_t() :
+        type(0),
+        figure(figure_rows, std::vector<int>(figure_cols)),
+        indices(4, std::pair<int, int>(0, 0))
+    {}
+
+    int type;
+    std::vector<std::vector<int>> figure;
+    std::vector<std::pair<int, int>> indices;
+
+    static constexpr int figure_rows{2};
+    static constexpr int figure_cols{4};
+};
+
 struct GameInfo_t {
-private:
-    struct Figure_t {
-        Figure_t() :
-            type(0),
-            figure(figure_rows, std::vector<int>(figure_cols)),
-            indices(4, std::pair<int, int>(0, 0))
-        {}
-
-        int type;
-        std::vector<std::vector<int>> figure;
-        std::vector<std::pair<int, int>> indices;
-    };
-
 public:
     GameInfo_t() :
         field(field_rows, std::vector<int>(field_cols))
@@ -52,7 +54,6 @@ public:
         level = 0;
         speed = 300;
         pause = true;
-        game_over = false;
     }
 
 public:
@@ -60,9 +61,9 @@ public:
     int high_score;
     int level;
     int speed;
+    int color;
 
     bool pause;
-    bool game_over;
 
     Figure_t next;
     Figure_t current;
@@ -71,8 +72,6 @@ public:
 
     static constexpr int field_rows{20};
     static constexpr int field_cols{10};
-    static constexpr int figure_rows{2};
-    static constexpr int figure_cols{4};
 };
 
 class Game {
@@ -90,6 +89,7 @@ public:
         kMoving,
         kShifting,
         kReach,
+        kPause,
         kGameOver
     };
 
@@ -100,12 +100,8 @@ public:
     virtual ~Game() {}
 
 public:
-    virtual GameInfo_t GetGameInfo() const = 0;
-
-public:
+    virtual const GameInfo_t& GetGameInfo() const = 0;
     virtual void SigAct(State state, Direction direct) = 0;
-    virtual void Stop() noexcept = 0;
-    virtual void ResetState() = 0;
 };
 }  // namespace s21
 

@@ -7,38 +7,24 @@
 #include "game.hpp"
 
 namespace s21 {
-class Tetris : public Game {
+class Tetris final : public Game {
 private:
     using Figure = std::vector<std::vector<int>>;
 
 public:
     Tetris() {
-        std::random_device rd;
-        rand_gen_.seed(rd());
-
         GenerateFigure();
         CopyFigure();
         GenerateFigure();
     }
 
 public:
-    GameInfo_t GetGameInfo() const override {
+    const GameInfo_t& GetGameInfo() const final {
         return game_info_;
     }
 
 public:
-    void Stop() noexcept override {
-        game_info_.pause = true;
-    }
-
-    void ResetState() override {
-        game_info_.Reset();
-        GenerateFigure();
-        CopyFigure();
-        GenerateFigure();
-    }
-
-    void SigAct(State state, Direction direct) override {
+    void SigAct(State state, Direction direct) final {
         while (true) {
             switch (state) {
             case State::kStart:
@@ -47,11 +33,11 @@ public:
                 break;
             case State::kSpawn:
                 if (!CopyFigure()) {
-                    state = State::kGameOver;
+                    ResetState();
                 } else {
                     GenerateFigure();
-                    return;
                 }
+                return;
                 break;
             case State::kMoving:
                 if (!game_info_.pause && !MoveFigureDown()) {
@@ -68,8 +54,11 @@ public:
                 RemoveLine();
                 state = State::kSpawn;
                 break;
+            case State::kPause:
+                game_info_.pause = true;
+                return;
+                break;
             case State::kGameOver:
-                game_info_.game_over = true;
                 ResetState();
                 return;
                 break;
@@ -78,6 +67,13 @@ public:
     }
 
 private:
+    void ResetState() {
+        game_info_.Reset();
+        GenerateFigure();
+        CopyFigure();
+        GenerateFigure();
+    }
+
     void Move(Direction direct) {
         if (!game_info_.pause)
             MakeTransformations(direct);
@@ -89,7 +85,7 @@ private:
                 RemoveLine();
 
                 if (!CopyFigure()) {
-                    game_info_.game_over = true;
+                    ResetState();
                 } else {
                     GenerateFigure();
                 }
@@ -113,15 +109,17 @@ private:
     }
 
     void GenerateFigure() {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
         std::uniform_int_distribution<> dist(0, figures_.size() - 1);
 
-        game_info_.next.type = dist(rand_gen_);
+        game_info_.next.type = dist(gen);
         game_info_.next.figure = figures_[game_info_.next.type];
 
         int index{};
 
-        for (int i{}; i < GameInfo_t::figure_rows; ++i) {
-            for (int j{}; j < GameInfo_t::figure_cols; ++j) {
+        for (int i{}; i < Figure_t::figure_rows; ++i) {
+            for (int j{}; j < Figure_t::figure_cols; ++j) {
                 if (game_info_.next.figure[i][j] == 1) {
                     auto& [row, col]{game_info_.next.indices[index]};
 
@@ -325,7 +323,6 @@ private:
 
 private:
     GameInfo_t game_info_;
-    std::mt19937 rand_gen_;
 
     std::vector<std::vector<std::vector<int>>> figures_{
         {

@@ -65,6 +65,11 @@
        <height>15</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLabel {
 	color: white;
@@ -103,6 +108,11 @@
        <width>60</width>
        <height>15</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">QLabel {
@@ -143,6 +153,11 @@
        <height>15</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLabel {
 	color: white;
@@ -182,6 +197,11 @@
        <height>15</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
+     </property>
      <property name="styleSheet">
       <string notr="true">QLabel {
 	color: white;
@@ -216,6 +236,11 @@
        <width>50</width>
        <height>15</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+      </font>
      </property>
      <property name="styleSheet">
       <string notr="true">QLabel {
@@ -257,6 +282,11 @@
       <height>20</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
     <item>
      <property name="text">
       <string>Snake</string>
@@ -276,6 +306,11 @@
       <width>100</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
     </property>
     <item>
      <property name="text">
